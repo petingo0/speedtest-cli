@@ -826,9 +826,7 @@ def speedtest():
             best['latency'],
             ((dlspeed / 1000 / 1000) * args.units[1]),
             ((ulspeed / 1000 / 1000) * args.units[1]))
-
-        print(values)
-
+        
         cursor.execute(sql, values)
 
         con.commit()
