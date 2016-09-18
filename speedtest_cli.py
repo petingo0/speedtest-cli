@@ -24,6 +24,9 @@ import socket
 import timeit
 import platform
 import threading
+import sqlite3
+
+
 
 __version__ = '0.3.4'
 
@@ -582,11 +585,13 @@ def speedtest():
     parser.add_argument('--list', action='store_true',
                         help='Display a list of speedtest.net servers '
                              'sorted by distance')
+    parser.add_argument('--db', action='store_true',
+                        help='Sava data to database [check the file config.cfg]')
     parser.add_argument('--server', help='Specify a server ID to test against')
     parser.add_argument('--mini', help='URL of the Speedtest Mini server')
     parser.add_argument('--source', help='Source IP address to bind to')
-    parser.add_argument('--timeout', default=10, type=int,
-                        help='HTTP timeout in seconds. Default 10')
+    parser.add_argument('--timeout', default=30, type=int,
+                        help='HTTP timeout in seconds. Default 30')
     parser.add_argument('--secure', action='store_true',
                         help='Use HTTPS instead of HTTP when communicating '
                              'with speedtest.net operated servers')
@@ -784,6 +789,50 @@ def speedtest():
         print_('Share results: %s://www.speedtest.net/result/%s.png' %
                (scheme, resultid[0]))
 
+    if args.db:
+
+
+        con = sqlite3.connect('results.db')
+        
+        cursor = con.cursor()
+
+        cursor.execute('''CREATE TABLE IF NOT EXISTS results 
+            (datetime TEXT NOT NULL,
+            client TEXT,
+            server TEXT,
+            city TEXT,
+            distance REAL,
+            latency REAL,
+            download REAL,
+            upload REAL)''');
+
+        sql = '''INSERT INTO results 
+            (client, 
+            datetime,
+            server, 
+            city, 
+            distance, 
+            latency, 
+            download, 
+            upload) 
+            VALUES (?, datetime(\'now\'), ?, ?, ?, ?, ?, ?)'''
+
+        values = (config['client']['isp'],
+            #'datetime(\'now\')',
+            config['client']['ip'],
+            #urlparts[1],
+            'Buenos Aires',
+            best['d'],
+            best['latency'],
+            ((dlspeed / 1000 / 1000) * args.units[1]),
+            ((ulspeed / 1000 / 1000) * args.units[1]))
+
+        print(values)
+
+        cursor.execute(sql, values)
+
+        con.commit()
+        con.close()
 
 def main():
     try:
