@@ -792,7 +792,11 @@ def speedtest():
     if args.db:
 
 
-        con = sqlite3.connect('results.db')
+	dir = os.path.dirname(__file__)
+
+	dbfile=os.path.join(dir,'results.db')
+
+        con = sqlite3.connect(dbfile)
         
         cursor = con.cursor()
 
