@@ -16,20 +16,28 @@
 #    under the License.
 
 import sqlite3
+import csv
+import os
 
 try:
 	con = sqlite3.connect('results.db')
 
 	cur = con.cursor()
 
-	cur.execute('''SELECT * FROM results''')
+	result = cur.execute('''SELECT * FROM results''')
+
+	rows = cur.fetchall()
+
+	dir = os.path.dirname(__file__)
+
+	result_file=os.path.join(dir,'output.csv')
+
+	with open(result_file, 'w', newline='') as f:
+	    writer = csv.writer(f)
+	    writer.writerow(['Date', 'Client', 'Server', 'City', 'Distance', 'Latency', 'Download', 'Upload'])
+	    writer.writerows(rows)
+
+	con.close()
 except:
 	e = sys.exc_info()[0]
-	print("Error: %s" % e) 
-
-rows = cur.fetchall()
-
-for row in rows:
-    print (row)
-
-con.close()
+	print("Error: %s" % e) 	

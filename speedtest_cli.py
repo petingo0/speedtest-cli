@@ -22,9 +22,9 @@ import math
 import signal
 import socket
 import timeit
+import sqlite3
 import platform
 import threading
-import sqlite3
 
 
 
@@ -791,10 +791,9 @@ def speedtest():
 
     if args.db:
 
+        dir = os.path.dirname(__file__)
 
-	dir = os.path.dirname(__file__)
-
-	dbfile=os.path.join(dir,'results.db')
+        dbfile=os.path.join(dir,'results.db')
 
         con = sqlite3.connect(dbfile)
         
