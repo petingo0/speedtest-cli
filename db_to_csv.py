@@ -15,7 +15,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import traceback
 import sqlite3
+import sys
 import csv
 import os
 
@@ -32,12 +34,21 @@ try:
 
 	result_file=os.path.join(dir,'output.csv')
 
-	with open(result_file, 'w', newline='') as f:
-	    writer = csv.writer(f)
-	    writer.writerow(['Date', 'Client', 'Server', 'City', 'Distance', 'Latency', 'Download', 'Upload'])
-	    writer.writerows(rows)
+	if sys.version_info[0] < 3:
+                with open(result_file, 'w') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(['Date', 'Client', 'Server', 'City', 'Distance', 'Latency', 'Download', 'Upload'])
+                    writer.writerows(rows)
+	else:
+
+		with open(result_file, 'w', newline='') as f:
+		    writer = csv.writer(f)
+		    writer.writerow(['Date', 'Client', 'Server', 'City', 'Distance', 'Latency', 'Download', 'Upload'])
+		    writer.writerows(rows)
 
 	con.close()
 except:
+	var = traceback.format_exc()
+	print(var)
 	e = sys.exc_info()[0]
 	print("Error: %s" % e) 	
